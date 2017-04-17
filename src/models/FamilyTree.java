@@ -10,9 +10,10 @@ import java.util.Queue;
 import java.util.TreeMap;
 
 public class FamilyTree {
+	ArrayList<Node> nodes;
 	
 	public FamilyTree(ArrayList<Member> members){
-		ArrayList<Node> nodes = new ArrayList<Node>();
+		nodes = new ArrayList<Node>();
 		for(Member member : members){
 			Node newNode = new Node(member.getName(), member.getGender(), member.getYear(),
 					member.getParent1(), member.getParent2());
@@ -37,11 +38,6 @@ public class FamilyTree {
 			System.out.print((node.parent2!=null)? node.parent2.name:"?"+" ");
 			System.out.println();
 		}*/
-		for(int i=0;i<50;++i){
-			Node current = pQ.remove();
-			printFamily(current,1);
-			System.out.println("\n\n");
-		}
 	}
 	
 	private void printFamily(Node node, int gen){
@@ -52,6 +48,14 @@ public class FamilyTree {
 		System.out.println();
 		if(node.parent1!=null) printFamily(node.parent1,gen+1);
 		if(node.parent2!=null) printFamily(node.parent2,gen+1);
+	}
+	
+	public ArrayList<String> getNodes(){
+		ArrayList<String> members = new ArrayList<String>();
+		for(Node node : nodes){
+			members.add(node.name);
+		}
+		return members;
 	}
 }
 
