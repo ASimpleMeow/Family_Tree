@@ -5,11 +5,11 @@ import java.util.ArrayList;
 
 import edu.princeton.cs.introcs.In;
 import models.FamilyTree;
-import models.Memeber;
+import models.Member;
 
 public class Main {
 	
-	ArrayList<Memeber> members;
+	ArrayList<Member> members;
 	FamilyTree familyTree;
 	
 	public static void main(String[] args){
@@ -20,20 +20,15 @@ public class Main {
 		}
 	}
 	
-	public void run() throws Exception{
-		members = new ArrayList<Memeber>();
-		familyTree = new FamilyTree();
+	public void run(){
+		members = new ArrayList<Member>();
 		loadMemebers();
-		for(Memeber member : members){
-			familyTree.addMember(member.getName(), member.getGender(), member.getYear(),
-					member.getParent1(), member.getParent2());
-		}
-		
-		if(!familyTree.findMemeber("Alexander").equals("Alexander")) System.out.println("YAY!");
+		familyTree = new FamilyTree(members);
+		//if(!familyTree.findMemeber("Alexander").equals("Alexander")) System.out.println("YAY!");
 		
 	}
 	
-	public void loadMemebers() throws Exception{
+	public void loadMemebers(){
 		File memebersFile = new File("data/large-database.txt");
         In inMemebers = new In(memebersFile);
           //each field is separated(delimited) by a '|'
@@ -46,10 +41,15 @@ public class Main {
             String[] memeberTokens = memeberDetails.split(delims);
             
             if (memeberTokens.length == 5) {
-            	members.add(new Memeber(memeberTokens[0],memeberTokens[1].charAt(0)
+            	members.add(new Member(memeberTokens[0],memeberTokens[1].charAt(0)
             			,Integer.parseInt(memeberTokens[2]),memeberTokens[3],memeberTokens[4]));
             }else{
-                throw new Exception("Invalid member length: "+memeberTokens.length);
+                try {
+					throw new Exception("Invalid member length: "+memeberTokens.length);
+				} catch (Exception e) {
+					// TODO Auto-generated catch block
+					e.printStackTrace();
+				}
             }
         }
 	}

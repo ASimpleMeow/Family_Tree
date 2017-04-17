@@ -1,6 +1,6 @@
 package models;
 
-public class Memeber {
+public class Member {
 
 	private String name;
 	private int year;
@@ -8,7 +8,7 @@ public class Memeber {
 	private String parent1;
 	private String parent2;
 	
-	public Memeber(String name,char gender, int year, String parent1, String parent2){
+	public Member(String name,char gender, int year, String parent1, String parent2){
 		this.name = name;
 		this.year = year;
 		this.gender = Character.toUpperCase(gender);
