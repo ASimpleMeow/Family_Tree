@@ -29,18 +29,54 @@ public class FamilyTree {
 	
 	public void addFamilyMember(String name, char gender, int year, String parent1, String parent2){
 		Node newNode = new Node(name, gender, year, parent1, parent2);
-		newNode.parent1 = (nodes.containsKey(parent1))? nodes.get(parent1) : null;
-		newNode.parent2 = (nodes.containsKey(parent2))? nodes.get(parent2) : null;
 		nodes.put(name, newNode);
+		refactorConnections();
+	}
+	
+	private void refactorConnections(){
+		for(Node node : nodes.values()){
+			node.parent1 = nodes.get(node.p1);
+			node.parent2 = nodes.get(node.p2);
+		}
 	}
 	
 	public String getFamilyTree(String member){
 		if(!nodes.containsKey(member)) throw new NullPointerException();
-		BTreePrinter.printNode(nodes.get(member));
-		return printFamily(nodes.get(member), 1, "");
+		//BTreePrinter.printNode(nodes.get(member));
+		String tree = printFamily(nodes.get(member));
+		System.out.println(tree);
+		return tree;
 	}
 	
-	private String printFamily(Node node, int gen, String familyTree){
+	private String printFamily(Node node){
+		String familyTree = "";
+		
+		//check for parents
+		HashMap<Node, Integer> parents = getParents(node, 0, new HashMap<Node, Integer>());
+		
+		//check for siblings
+		ArrayList<Node> siblings = getSiblings(node, new ArrayList<Node>());
+		
+		//check for children
+		HashMap<Node, Integer> children = getChildren(node, 1, new HashMap<Node, Integer>());
+		
+		for(Node parent : parents.keySet()){
+			System.out.println("Generation : "+ parents.get(parent)+"Parent : "+parent.name);
+		}
+		System.out.println("\n");
+		
+		for(Node sibling : siblings){
+			System.out.println("Sibling : "+sibling.name);
+		}
+		System.out.println("\n");
+		
+		for(Node child : children.keySet()){
+			System.out.println("Generation : "+ children.get(child)+"Child : "+child.name);
+		}
+		System.out.println("\n");
+		
+		return familyTree;
+		/*
 		familyTree += "Generation "+gen+"  ";
 		familyTree += node.name+" "+node.gender+" "+node.year+"  ";
 		familyTree += (node.parent1!=null)? node.parent1.name:" ? "+"  ";
@@ -49,6 +85,61 @@ public class FamilyTree {
 		if(node.parent1!=null) familyTree = printFamily(node.parent1, gen+1, familyTree);
 		if(node.parent2!=null) familyTree = printFamily(node.parent2, gen+1, familyTree);
 		return familyTree;
+		*/
+	}
+	
+	/**
+	 * Retrieves parents of the node using recursion
+	 * The parents map stores the Node and the generation it belongs to
+	 * 
+	 * @param current Current node
+	 * @param gen Generation at which the current node is at
+	 * @param parents Map of parents to the current node
+	 * @return 
+	 */
+	private HashMap<Node, Integer> getParents(Node current, int gen, HashMap<Node, Integer> parents){
+		parents.put(current, gen);
+		if(current.parent1 != null) parents = getParents(current.parent1, gen+1, parents);
+		if(current.parent2 != null) parents = getParents(current.parent2, gen+1, parents);
+		
+		return parents;
+	}
+	
+	/**
+	 * 
+	 * @param current Current node 
+	 * @param siblings ArrayList of siblings to the current node
+	 * @return List of sibling nodes
+	 */
+	private ArrayList<Node> getSiblings(Node current, ArrayList<Node> siblings) {
+		for(Node node : nodes.values()){
+			if(node.equals(current)) continue;
+			if( (node.parent1 != null && (node.parent1 == current.parent1 || node.parent1 == current.parent2) ) ||
+					(node.parent2 != null && (node.parent2 == current.parent1 || node.parent2 == current.parent2)) )
+					if(!siblings.contains(node)) siblings.add(node);
+		}
+		
+		return siblings;
+	}
+	
+	/**
+	 * Retrieves children of the node using recursion
+	 * The children map stores the Node and the generation it belongs to
+	 * 
+	 * @param current Current Node
+	 * @param children Map of children to the current node
+	 * @return
+	 */
+	private HashMap<Node, Integer> getChildren(Node current, int gen, HashMap<Node, Integer> children) {
+		for(Node node : nodes.values()){
+			if(node.equals(current)) continue;
+			if(node.parent1 == current || node.parent2 == current){
+				children.put(node, gen);
+				children = getChildren(node, gen+1, children);
+			}
+		}
+		
+		return children;
 	}
 	
 	public ArrayList<String> getNodes(){
