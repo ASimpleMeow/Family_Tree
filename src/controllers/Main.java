@@ -25,7 +25,9 @@ public class Main extends Application{
 	public void start(Stage primaryStage) {
 		this.primaryStage = primaryStage;
 		this.primaryStage.setTitle("Family Tree");
-		this.primaryStage.setResizable(false);
+		this.primaryStage.setResizable(true);
+		this.primaryStage.setMinWidth(450);
+		this.primaryStage.setMinHeight(350);
 		
 		showMainView();
 	}

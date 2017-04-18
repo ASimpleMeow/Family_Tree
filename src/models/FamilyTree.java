@@ -34,14 +34,20 @@ public class FamilyTree {
 		nodes.put(name, newNode);
 	}
 	
-	private void printFamily(Node node, int gen){
-		System.out.print("Generation "+gen+"  ");
-		System.out.print(node.name+" "+node.gender+" "+node.year+"  ");
-		System.out.print((node.parent1!=null)? node.parent1.name:" ? "+"  ");
-		System.out.print((node.parent2!=null)? node.parent2.name:" ? "+"  ");
-		System.out.println();
-		if(node.parent1!=null) printFamily(node.parent1,gen+1);
-		if(node.parent2!=null) printFamily(node.parent2,gen+1);
+	public String getFamilyTree(String member){
+		if(!nodes.containsKey(member)) throw new NullPointerException();
+		return printFamily(nodes.get(member), 1, "");
+	}
+	
+	private String printFamily(Node node, int gen, String familyTree){
+		familyTree += "Generation "+gen+"  ";
+		familyTree += node.name+" "+node.gender+" "+node.year+"  ";
+		familyTree += (node.parent1!=null)? node.parent1.name:" ? "+"  ";
+		familyTree += (node.parent2!=null)? node.parent2.name:" ? "+"  ";
+		familyTree += "\n";
+		if(node.parent1!=null) familyTree = printFamily(node.parent1, gen+1, familyTree);
+		if(node.parent2!=null) familyTree = printFamily(node.parent2, gen+1, familyTree);
+		return familyTree;
 	}
 	
 	public ArrayList<String> getNodes(){
