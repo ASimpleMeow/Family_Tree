@@ -9,7 +9,6 @@ import javafx.scene.control.Button;
 import javafx.scene.control.ChoiceBox;
 import javafx.scene.control.TextArea;
 import models.FamilyTree;
-import models.Member;
 
 public class MainViewController {
 	
@@ -24,8 +23,7 @@ public class MainViewController {
 	
 	@FXML
 	private void initialize(){
-		ArrayList<Member>members = loadMemebers(new ArrayList<Member>());
-		familyTree = new FamilyTree(members);
+		familyTree = loadMemebers(new FamilyTree());
 		fillChoiceBox(familyTree.getNodes());
 	}
 	
@@ -35,7 +33,7 @@ public class MainViewController {
 		}
 	}
 	
-	public ArrayList<Member> loadMemebers(ArrayList<Member>members){
+	public FamilyTree loadMemebers(FamilyTree familyTree){
 		File memebersFile = new File("data/large-database.txt");
         In inMemebers = new In(memebersFile);
           //each field is separated(delimited) by a '|'
@@ -48,8 +46,8 @@ public class MainViewController {
             String[] memeberTokens = memeberDetails.split(delims);
             
             if (memeberTokens.length == 5) {
-            	members.add(new Member(memeberTokens[0],memeberTokens[1].charAt(0)
-            			,Integer.parseInt(memeberTokens[2]),memeberTokens[3],memeberTokens[4]));
+            	familyTree.addFamilyMember(memeberTokens[0],memeberTokens[1].charAt(0)
+            			,Integer.parseInt(memeberTokens[2]),memeberTokens[3],memeberTokens[4]);
             }else{
                 try {
 					throw new Exception("Invalid member length: "+memeberTokens.length);
@@ -59,7 +57,7 @@ public class MainViewController {
 				}
             }
         }
-        return members;
+        return familyTree;
 	}
 	
 }

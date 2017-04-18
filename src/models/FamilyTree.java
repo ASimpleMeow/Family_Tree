@@ -3,6 +3,7 @@ package models;
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.Comparator;
+import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 import java.util.PriorityQueue;
@@ -10,27 +11,13 @@ import java.util.Queue;
 import java.util.TreeMap;
 
 public class FamilyTree {
-	ArrayList<Node> nodes;
+	Map<String, Node> nodes;	//Name to Node dictionary
 	
-	public FamilyTree(ArrayList<Member> members){
-		nodes = new ArrayList<Node>();
-		for(Member member : members){
-			Node newNode = new Node(member.getName(), member.getGender(), member.getYear(),
-					member.getParent1(), member.getParent2());
-			nodes.add(newNode);
-		}
-		for (Node currentNode : nodes){
-			for (Node node : nodes){
-				if (currentNode.equals(node)) continue;
-				if(currentNode.p1.equals(node.name)){
-					currentNode.parent1 = node;
-				}else if(currentNode.p2.equals(node.name)){
-					currentNode.parent2 = node;
-				}
-			}
-		}
-		Queue<Node> pQ = new PriorityQueue<Node>();
-		pQ.addAll(nodes);
+	public FamilyTree(){
+		nodes = new HashMap<String, Node>();
+		
+		//Queue<Node> pQ = new PriorityQueue<Node>();
+		//pQ.addAll(nodes);
 		/*
 		for (Node node : nodes){
 			System.out.print(node.name+" "+node.gender+" "+node.year+" ");
@@ -38,6 +25,13 @@ public class FamilyTree {
 			System.out.print((node.parent2!=null)? node.parent2.name:"?"+" ");
 			System.out.println();
 		}*/
+	}
+	
+	public void addFamilyMember(String name, char gender, int year, String parent1, String parent2){
+		Node newNode = new Node(name, gender, year, parent1, parent2);
+		newNode.parent1 = (nodes.containsKey(parent1))? nodes.get(parent1) : null;
+		newNode.parent2 = (nodes.containsKey(parent2))? nodes.get(parent2) : null;
+		nodes.put(name, newNode);
 	}
 	
 	private void printFamily(Node node, int gen){
@@ -52,7 +46,7 @@ public class FamilyTree {
 	
 	public ArrayList<String> getNodes(){
 		ArrayList<String> members = new ArrayList<String>();
-		for(Node node : nodes){
+		for(Node node : nodes.values()){
 			members.add(node.name);
 		}
 		return members;
