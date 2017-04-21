@@ -26,8 +26,8 @@ public class MainViewController {
 	 */
 	@FXML
 	private void initialize(){
-		familyTree = loadMemebers(new FamilyTree());
-		fillChoiceBox(familyTree.getNodes());
+		familyTree = new FamilyTree(loadMemebers());
+		fillChoiceBox(familyTree.getTreeRootNames());
 	}
 	
 	/**
@@ -59,7 +59,8 @@ public class MainViewController {
 	 * @param familyTree Empty family tree class
 	 * @return FamilyTree
 	 */
-	public FamilyTree loadMemebers(FamilyTree familyTree){
+	public ArrayList<String[]> loadMemebers(){
+		ArrayList<String[]> dataNodes = new ArrayList<String[]>();
 		File memebersFile = new File("data/large-database.txt");
         In inMembers = new In(memebersFile);
           //each field is separated(delimited) by a '|'
@@ -69,18 +70,17 @@ public class MainViewController {
             String memeberDetails = inMembers.readLine();
 
             // parse user details string
-            String[] memeberTokens = memeberDetails.split(delims);
+            String[] memberTokens = memeberDetails.split(delims);
             
-            if (memeberTokens.length == 5) {
-            	familyTree.addFamilyMember(memeberTokens[0],memeberTokens[1].charAt(0)
-            			,Integer.parseInt(memeberTokens[2]),memeberTokens[3],memeberTokens[4]);
+            if (memberTokens.length == 5) {
+            	dataNodes.add(memberTokens);
             }else{
             	inMembers.close();
                 throw new IllegalArgumentException();
             }
         }
         inMembers.close();
-        return familyTree;
+        return dataNodes;
 	}
 	
 }

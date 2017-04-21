@@ -12,20 +12,59 @@ import java.util.TreeMap;
 
 public class FamilyTree {
 	Map<String, Node> nodes;	//Name to Node dictionary
+	ArrayList<Node> trees;		//Family Tree's
 	
-	public FamilyTree(){
+	public FamilyTree(ArrayList<String[]> dataNodes){
 		nodes = new HashMap<String, Node>();
+		trees = new ArrayList<Node>();
+		PriorityQueue<Node> pr = new PriorityQueue<Node>();
+		for(String[] memberData : dataNodes){
+			Node newNode = new Node(memberData[0],memberData[1].charAt(0),Integer.valueOf(memberData[2]),
+					memberData[3],memberData[4]);
+			nodes.put(newNode.name, newNode);
+			pr.add(newNode);
+		}
 		
-		//Queue<Node> pQ = new PriorityQueue<Node>();
-		//pQ.addAll(nodes);
-		/*
-		for (Node node : nodes){
-			System.out.print(node.name+" "+node.gender+" "+node.year+" ");
-			System.out.print((node.parent1!=null)? node.parent1.name:"?"+" ");
-			System.out.print((node.parent2!=null)? node.parent2.name:"?"+" ");
-			System.out.println();
-		}*/
+		refactorConnections();
+		
+		trees.add(pr.remove());
+		
+		while(!pr.isEmpty()){
+			Node currentNode = pr.remove();
+			if(!checkTrees(currentNode)) trees.add(currentNode);
+		}
 	}
+	
+	private boolean findNodeParent(Node currentNode, Node target){
+		if(currentNode.equals(target)) return true;
+		boolean fatherSide = (currentNode.father==null)? false : findNodeParent(currentNode.father, target);
+		boolean motherSide = (currentNode.mother==null)? false : findNodeParent(currentNode.mother, target);
+		return (fatherSide)? fatherSide : motherSide;
+	}
+	
+	private boolean findNodeChild(Node currentNode, Node target){
+		if(currentNode.equals(target)) return true;
+		for(Node child : currentNode.children){
+			if(findNodeChild(child, target)) return true;
+		}
+		return false;
+	}
+	
+	private boolean checkTrees(Node currentNode){
+		for(Node rootNode : trees){
+			if(getSiblings(rootNode, new ArrayList<Node>()).contains(currentNode)){
+				return true;
+			}
+			if(findNodeParent(rootNode, currentNode)){
+				return true;
+			}
+			if(findNodeChild(rootNode, currentNode)){
+				return true;
+			}
+		}
+		return false;
+	}
+	
 	
 	public void addFamilyMember(String name, char gender, int year, String parent1, String parent2){
 		Node newNode = new Node(name, gender, year, parent1, parent2);
@@ -35,57 +74,26 @@ public class FamilyTree {
 	
 	private void refactorConnections(){
 		for(Node node : nodes.values()){
-			node.parent1 = nodes.get(node.p1);
-			node.parent2 = nodes.get(node.p2);
+			if(nodes.get(node.parent1Name) != null){
+				if(nodes.get(node.parent1Name).gender == 'M')
+					node.father = nodes.get(node.parent1Name);
+				else
+					node.mother = nodes.get(node.parent1Name);
+			}
+			if(nodes.get(node.parent2Name) != null){
+				if(nodes.get(node.parent2Name).gender == 'M')
+					node.father = nodes.get(node.parent2Name);
+				else
+					node.mother = nodes.get(node.parent2Name);
+			}
+			for(Node child : nodes.values()){
+				if(child.equals(node)) continue;
+				if((child.father != null && child.father == node)||
+						(child.mother != null && child.mother == node)){
+					if(!node.children.contains(child)) node.children.add(child);
+				}
+			}
 		}
-	}
-	
-	public String getFamilyTree(String member){
-		if(!nodes.containsKey(member)) throw new NullPointerException();
-		//BTreePrinter.printNode(nodes.get(member));
-		String tree = printFamily(nodes.get(member));
-		System.out.println(tree);
-		return tree;
-	}
-	
-	private String printFamily(Node node){
-		String familyTree = "";
-		
-		//check for parents
-		HashMap<Node, Integer> parents = getParents(node, 0, new HashMap<Node, Integer>());
-		
-		//check for siblings
-		ArrayList<Node> siblings = getSiblings(node, new ArrayList<Node>());
-		
-		//check for children
-		HashMap<Node, Integer> children = getChildren(node, 1, new HashMap<Node, Integer>());
-		
-		for(Node parent : parents.keySet()){
-			System.out.println("Generation : "+ parents.get(parent)+"Parent : "+parent.name);
-		}
-		System.out.println("\n");
-		
-		for(Node sibling : siblings){
-			System.out.println("Sibling : "+sibling.name);
-		}
-		System.out.println("\n");
-		
-		for(Node child : children.keySet()){
-			System.out.println("Generation : "+ children.get(child)+"Child : "+child.name);
-		}
-		System.out.println("\n");
-		
-		return familyTree;
-		/*
-		familyTree += "Generation "+gen+"  ";
-		familyTree += node.name+" "+node.gender+" "+node.year+"  ";
-		familyTree += (node.parent1!=null)? node.parent1.name:" ? "+"  ";
-		familyTree += (node.parent2!=null)? node.parent2.name:" ? "+"  ";
-		familyTree += "\n";
-		if(node.parent1!=null) familyTree = printFamily(node.parent1, gen+1, familyTree);
-		if(node.parent2!=null) familyTree = printFamily(node.parent2, gen+1, familyTree);
-		return familyTree;
-		*/
 	}
 	
 	/**
@@ -97,10 +105,10 @@ public class FamilyTree {
 	 * @param parents Map of parents to the current node
 	 * @return 
 	 */
-	private HashMap<Node, Integer> getParents(Node current, int gen, HashMap<Node, Integer> parents){
+	private TreeMap<Node, Integer> getParents(Node current, int gen, TreeMap<Node, Integer> parents){
 		parents.put(current, gen);
-		if(current.parent1 != null) parents = getParents(current.parent1, gen+1, parents);
-		if(current.parent2 != null) parents = getParents(current.parent2, gen+1, parents);
+		if(current.father != null) parents = getParents(current.father, gen+1, parents);
+		if(current.mother != null) parents = getParents(current.mother, gen+1, parents);
 		
 		return parents;
 	}
@@ -114,8 +122,8 @@ public class FamilyTree {
 	private ArrayList<Node> getSiblings(Node current, ArrayList<Node> siblings) {
 		for(Node node : nodes.values()){
 			if(node.equals(current)) continue;
-			if( (node.parent1 != null && (node.parent1 == current.parent1 || node.parent1 == current.parent2) ) ||
-					(node.parent2 != null && (node.parent2 == current.parent1 || node.parent2 == current.parent2)) )
+			if( (node.father != null && (node.father == current.father || node.father == current.mother) ) ||
+					(node.mother != null && (node.mother == current.father || node.mother == current.mother)) )
 					if(!siblings.contains(node)) siblings.add(node);
 		}
 		
@@ -130,10 +138,10 @@ public class FamilyTree {
 	 * @param children Map of children to the current node
 	 * @return
 	 */
-	private HashMap<Node, Integer> getChildren(Node current, int gen, HashMap<Node, Integer> children) {
+	private TreeMap<Node, Integer> getChildren(Node current, int gen, TreeMap<Node, Integer> children) {
 		for(Node node : nodes.values()){
 			if(node.equals(current)) continue;
-			if(node.parent1 == current || node.parent2 == current){
+			if(node.father == current || node.mother == current){
 				children.put(node, gen);
 				children = getChildren(node, gen+1, children);
 			}
@@ -142,114 +150,112 @@ public class FamilyTree {
 		return children;
 	}
 	
-	public ArrayList<String> getNodes(){
+	public ArrayList<String> getTreeRootNames(){
 		ArrayList<String> members = new ArrayList<String>();
-		for(Node node : nodes.values()){
+		for(Node node : trees){
 			members.add(node.name);
 		}
+		Collections.sort(members);
 		return members;
 	}
-}
-
-class Node implements Comparable<Node>{
-	String name;
-	char gender;
-	int year;
-	Node parent1;
-	Node parent2;
-	String p1;
-	String p2;
 	
-	public Node(String name,char gender, int year, String p1, String p2){
-		this.name = name;
-		this.gender = Character.toUpperCase(gender);
-		this.year = year;
-		this.p1 = p1;
-		this.p2 = p2;
-		parent1 = null;
-		parent2 = null;
+	public String getFamilyTree(String node){
+		return printNode(nodes.get(node));
 	}
-
-	@Override
-	public int compareTo(Node other) {
-		return other.year - year;
-	}
-}
-
-class BTreePrinter {
-
-    public static <T extends Comparable<?>> void printNode(Node root) {
-        int maxLevel = BTreePrinter.maxLevel(root);
-
-        printNodeInternal(Collections.singletonList(root), 1, maxLevel);
+	
+	
+	public <T extends Comparable<?>> String printNode(Node root) {
+        int maxLevel = maxLevel(root);
+        
+        return printNodeInternal(Collections.singletonList(root), 1, maxLevel, "");
     }
 
-    private static <T extends Comparable<?>> void printNodeInternal(List<Node> nodes, int level, int maxLevel) {
-        if (nodes.isEmpty() || BTreePrinter.isAllElementsNull(nodes))
-            return;
-
+    private <T extends Comparable<?>> String printNodeInternal(List<Node> nodes, int level, int maxLevel, String tree) {
+        if (nodes.isEmpty() || isAllElementsNull(nodes))
+            return tree;
+        
         int floor = maxLevel - level;
         int endgeLines = (int) Math.pow(2, (Math.max(floor - 1, 0)));
         int firstSpaces = (int) Math.pow(2, (floor)) - 1;
         int betweenSpaces = (int) Math.pow(2, (floor + 1)) - 1;
 
-        BTreePrinter.printWhitespaces(firstSpaces);
+        tree+=printWhitespaces(firstSpaces);
+        System.out.print(printWhitespaces(firstSpaces));
 
         List<Node> newNodes = new ArrayList<Node>();
         for (Node node : nodes) {
             if (node != null) {
+            	ArrayList<Node> siblings = getSiblings(node, new ArrayList<Node>());
+                tree+=node.name;
                 System.out.print(node.name);
-                newNodes.add(node.parent1);
-                newNodes.add(node.parent2);
+                tree+=" ( ";
+                System.out.print(" ( ");
+                for(int i=0; i<siblings.size(); i++){
+                	tree+=siblings.get(i).name+",";
+                	System.out.print(siblings.get(i).name+",");
+                }
+                tree = tree.substring(0, tree.length()-1);
+                tree+=" )";
+                System.out.print(" )");
+                newNodes.add(node.father);
+                newNodes.add(node.mother);
             } else {
                 newNodes.add(null);
                 newNodes.add(null);
+                tree+=" ";
                 System.out.print(" ");
             }
 
-            BTreePrinter.printWhitespaces(betweenSpaces);
+            tree+=printWhitespaces(betweenSpaces);
+            System.out.print(printWhitespaces(betweenSpaces));
         }
-        System.out.println("");
+        tree+="\n";
+        System.out.print("\n");
 
         for (int i = 1; i <= endgeLines; i++) {
             for (int j = 0; j < nodes.size(); j++) {
-                BTreePrinter.printWhitespaces(firstSpaces - i);
+                tree+=printWhitespaces(firstSpaces - i);
+                System.out.print(printWhitespaces(firstSpaces - i));
                 if (nodes.get(j) == null) {
-                    BTreePrinter.printWhitespaces(endgeLines + endgeLines + i + 1);
+                    tree+=printWhitespaces(endgeLines + endgeLines + i + 1);
+                    System.out.print(printWhitespaces(endgeLines + endgeLines + i + 1));
                     continue;
                 }
 
-                if (nodes.get(j).parent1 != null)
-                    System.out.print("/");
+                if (nodes.get(j).father != null)
+                    System.out.print("/");//tree+="/";
                 else
-                    BTreePrinter.printWhitespaces(1);
+                	System.out.print(printWhitespaces(1));//tree+=printWhitespaces(1);
 
-                BTreePrinter.printWhitespaces(i + i - 1);
+                System.out.print(printWhitespaces(i + i - 1));//tree+= printWhitespaces(i + i - 1);
 
-                if (nodes.get(j).parent2 != null)
-                    System.out.print("\\");
+                if (nodes.get(j).mother != null)
+                	System.out.print("\\");//tree+="\\";
                 else
-                    BTreePrinter.printWhitespaces(1);
+                	System.out.print(printWhitespaces(1));//tree+=printWhitespaces(1);
 
-                BTreePrinter.printWhitespaces(endgeLines + endgeLines - i);
+                tree+=printWhitespaces(endgeLines + endgeLines - i);
+                System.out.print(printWhitespaces(endgeLines + endgeLines - i));
             }
-
-            System.out.println("");
+            System.out.println();
+            tree+="\n";
         }
 
-        printNodeInternal(newNodes, level + 1, maxLevel);
+        return printNodeInternal(newNodes, level + 1, maxLevel,tree);
     }
 
-    private static void printWhitespaces(int count) {
+    private static String printWhitespaces(int count) {
+    	String space = "";
         for (int i = 0; i < count; i++)
-            System.out.print(" ");
+            space+=" ";
+        return space;
     }
 
     private static <T extends Comparable<?>> int maxLevel(Node node) {
         if (node == null)
             return 0;
 
-        return Math.max(BTreePrinter.maxLevel(node.parent1), BTreePrinter.maxLevel(node.parent2)) + 1;
+        return Math.max(maxLevel(node.father), maxLevel(node.mother)) + 1;
     }
 
     private static <T> boolean isAllElementsNull(List<T> list) {
@@ -260,5 +266,31 @@ class BTreePrinter {
 
         return true;
     }
+}
 
+class Node implements Comparable<Node>{
+	String name;
+	char gender;
+	int year;
+	Node father;
+	Node mother;
+	String parent1Name;
+	String parent2Name;
+	ArrayList<Node> children;
+	
+	public Node(String name,char gender, int year, String parent1Name, String parent2Name){
+		this.name = name;
+		this.gender = Character.toUpperCase(gender);
+		this.year = year;
+		this.parent1Name = parent1Name;
+		this.parent2Name = parent2Name;
+		children = new ArrayList<Node>();
+		father = null;
+		mother = null;
+	}
+
+	@Override
+	public int compareTo(Node other) {
+		return other.year - this.year;
+	}
 }

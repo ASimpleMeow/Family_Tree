@@ -13,6 +13,7 @@ import javafx.stage.WindowEvent;
 public class Main extends Application{
 	
 	private Stage primaryStage; //The main stage(window)
+	public final static Main instance = new Main();
 	
 	public static void main(String[] args){
 		launch(args);
