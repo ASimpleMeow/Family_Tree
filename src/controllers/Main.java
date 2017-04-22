@@ -12,12 +12,14 @@ import javafx.scene.layout.AnchorPane;
 import javafx.stage.Modality;
 import javafx.stage.Stage;
 import javafx.stage.WindowEvent;
+import models.FamilyTree;
 import views.MainViewController;
 
 public class Main extends Application{
 	
 	private Stage primaryStage; //The main stage(window)
 	public final static Main instance = new Main();
+	public FamilyTree familyTree;
 	
 	public static void main(String[] args){
 		launch(args);
@@ -77,23 +79,25 @@ public class Main extends Application{
 	/**
 	 * This method will display the RemoveMemberView window
 	 */
-	public void showRemoveMember(){
+	public Stage showRemoveMember(){
 		try{
-			stageSetUp("Remove Family Member","/views/RemoveMemberView.fxml");
+			return stageSetUp("Remove Family Member","/views/RemoveMemberView.fxml");
 		}catch(IOException e){
 			e.printStackTrace();
 		}
+		return null;
 	}
 	
 	/**
 	 * This method will display the ModifyMemberView window
 	 */
-	public void showModifyMember(){
+	public Stage showModifyMember(){
 		try{
-			stageSetUp("Modify Family Member","/views/ModifyMemberView.fxml");
+			return stageSetUp("Modify Family Member","/views/ModifyMemberView.fxml");
 		}catch(IOException e){
 			e.printStackTrace();
 		}
+		return null;
 	}
 	
 	/**
@@ -105,7 +109,7 @@ public class Main extends Application{
 	 * @param message
 	 * @param type
 	 */
-	public static void showErrorMessage(String title, String header, String message){
+	public void showErrorMessage(String title, String header, String message){
 		 // Show the confirmation message.
         Alert alert = new Alert(AlertType.ERROR);
         alert.setTitle(title);
@@ -123,7 +127,7 @@ public class Main extends Application{
 	 * @param message
 	 * @param type
 	 */
-	public static void showSuccessMessage(String title, String header, String message){
+	public void showSuccessMessage(String title, String header, String message){
 		 // Show the confirmation message.
         Alert alert = new Alert(AlertType.INFORMATION);
         alert.setTitle(title);

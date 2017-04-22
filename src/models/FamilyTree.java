@@ -105,6 +105,8 @@ public class FamilyTree {
 			else if(child.mother.equals(member))
 				child.mother = null;
 		}
+		
+		trees.remove(member);
 		nodes.remove(name);
 		return true;
 	}
@@ -196,6 +198,14 @@ public class FamilyTree {
 		for(Node node : trees){
 			members.add(node.name);
 		}
+		Collections.sort(members);
+		return members;
+	}
+	
+	public ArrayList<String> getAllNodeNames(){
+		ArrayList<String> members = new ArrayList<String>();
+		for(Node node : nodes.values())
+			members.add(node.name);
 		Collections.sort(members);
 		return members;
 	}

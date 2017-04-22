@@ -6,7 +6,7 @@
 <?import javafx.scene.layout.AnchorPane?>
 <?import javafx.scene.text.Font?>
 
-<AnchorPane prefHeight="250.0" prefWidth="400.0" xmlns="http://javafx.com/javafx/8.0.65" xmlns:fx="http://javafx.com/fxml/1">
+<AnchorPane prefHeight="250.0" prefWidth="400.0" xmlns="http://javafx.com/javafx/8.0.65" xmlns:fx="http://javafx.com/fxml/1" fx:controller="views.RemoveMemberController">
    <children>
       <Label alignment="CENTER" layoutX="46.0" layoutY="26.0" prefHeight="39.0" prefWidth="300.0" text="Remove Family Member" AnchorPane.topAnchor="25.0">
          <font>
@@ -18,13 +18,13 @@
             <Font name="Times New Roman" size="15.0" />
          </font>
       </Label>
-      <ComboBox editable="true" layoutX="50.0" layoutY="113.0" prefHeight="25.0" prefWidth="300.0" AnchorPane.leftAnchor="50.0" />
-      <Button layoutX="44.0" layoutY="187.0" mnemonicParsing="false" prefHeight="39.0" prefWidth="125.0" text="Confirm" AnchorPane.bottomAnchor="25.0">
+      <ComboBox fx:id="comboBox" editable="true" layoutX="50.0" layoutY="113.0" prefHeight="25.0" prefWidth="300.0" AnchorPane.leftAnchor="50.0" />
+      <Button fx:id="confirmButton" layoutX="44.0" layoutY="187.0" mnemonicParsing="false" onAction="#onConfirmButton" prefHeight="39.0" prefWidth="125.0" text="Confirm" AnchorPane.bottomAnchor="25.0">
          <font>
             <Font name="Times New Roman" size="16.0" />
          </font>
       </Button>
-      <Button layoutX="221.0" layoutY="187.0" mnemonicParsing="false" prefHeight="39.0" prefWidth="125.0" text="Cancel" AnchorPane.bottomAnchor="25.0">
+      <Button fx:id="cancelButton" layoutX="221.0" layoutY="187.0" mnemonicParsing="false" onAction="#onCancelButton" prefHeight="39.0" prefWidth="125.0" text="Cancel" AnchorPane.bottomAnchor="25.0">
          <font>
             <Font name="Times New Roman" size="16.0" />
          </font>
