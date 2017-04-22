@@ -6,9 +6,13 @@ import javafx.application.Application;
 import javafx.event.EventHandler;
 import javafx.fxml.FXMLLoader;
 import javafx.scene.Scene;
+import javafx.scene.control.Alert;
+import javafx.scene.control.Alert.AlertType;
 import javafx.scene.layout.AnchorPane;
+import javafx.stage.Modality;
 import javafx.stage.Stage;
 import javafx.stage.WindowEvent;
+import views.MainViewController;
 
 public class Main extends Application{
 	
@@ -36,10 +40,8 @@ public class Main extends Application{
 	/**
 	 * The Main Window displaying all the main menu options
 	 */
-	private void showMainView()
-	{
-		try
-		{
+	private void showMainView(){
+		try{
 			//Load Layout
 			FXMLLoader loader = new FXMLLoader();
 			loader.setLocation(Main.class.getResource("/views/MainView.fxml"));
@@ -49,14 +51,110 @@ public class Main extends Application{
 			Scene scene = new Scene(mainLayout);
 			primaryStage.setScene(scene);
 			primaryStage.show();
-		}catch(IOException e)
-		{
+		}catch(IOException e){
 			e.printStackTrace();
 		}
 		primaryStage.setOnCloseRequest(new EventHandler<WindowEvent>() {
             public void handle(WindowEvent we) {
+            	MainViewController.saveFamilyTree();
                 System.exit(0);
             }
         });
+	}
+	
+	/**
+	 * This method will display the AddMemberView window
+	 */
+	public Stage showAddMember(){
+		try{
+			return stageSetUp("Add Family Member","/views/AddMemberView.fxml");
+		}catch(IOException e){
+			e.printStackTrace();
+		}
+		return null;
+	}
+	
+	/**
+	 * This method will display the RemoveMemberView window
+	 */
+	public void showRemoveMember(){
+		try{
+			stageSetUp("Remove Family Member","/views/RemoveMemberView.fxml");
+		}catch(IOException e){
+			e.printStackTrace();
+		}
+	}
+	
+	/**
+	 * This method will display the ModifyMemberView window
+	 */
+	public void showModifyMember(){
+		try{
+			stageSetUp("Modify Family Member","/views/ModifyMemberView.fxml");
+		}catch(IOException e){
+			e.printStackTrace();
+		}
+	}
+	
+	/**
+	 * This method will display a message to tell the user the operation resulted in an
+	 * error.
+	 * 
+	 * @param title
+	 * @param header
+	 * @param message
+	 * @param type
+	 */
+	public static void showErrorMessage(String title, String header, String message){
+		 // Show the confirmation message.
+        Alert alert = new Alert(AlertType.ERROR);
+        alert.setTitle(title);
+        alert.setHeaderText(header);
+        alert.setContentText(message);
+
+        alert.showAndWait();
+	}
+	
+	/**
+	 * This method will display a message to tell the user the opertation was successful.
+	 * 
+	 * @param title
+	 * @param header
+	 * @param message
+	 * @param type
+	 */
+	public static void showSuccessMessage(String title, String header, String message){
+		 // Show the confirmation message.
+        Alert alert = new Alert(AlertType.INFORMATION);
+        alert.setTitle(title);
+        alert.setHeaderText(header);
+        alert.setContentText(message);
+
+        alert.showAndWait();
+	}
+	
+	/**
+	 * This method is a template for each stage/window that I use outside
+	 * of the main window.
+	 * 
+	 * @param title
+	 * @param location
+	 * @throws IOException
+	 */
+	private Stage stageSetUp(String title, String location) throws IOException{
+		// Create the separate Stage.
+        Stage stage = new Stage();
+        stage.setTitle(title);
+        stage.initModality(Modality.APPLICATION_MODAL);
+        
+        //Load layout from fxml file
+		AnchorPane stageLayout = 
+				(AnchorPane) FXMLLoader.load(Main.class.getResource(location));
+        Scene scene = new Scene(stageLayout);
+        stage.setResizable(false);
+        
+        stage.setScene(scene);
+        stage.show();
+        return stage;
 	}
 }

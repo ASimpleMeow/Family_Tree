@@ -1,5 +1,6 @@
 package models;
 
+import java.io.File;
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.Comparator;
@@ -10,13 +11,21 @@ import java.util.PriorityQueue;
 import java.util.Queue;
 import java.util.TreeMap;
 
+import utils.XMLSerializer;
+
 public class FamilyTree {
 	Map<String, Node> nodes;	//Name to Node dictionary
 	ArrayList<Node> trees;		//Family Tree's
+	XMLSerializer serializer;
 	
-	public FamilyTree(ArrayList<String[]> dataNodes){
+	public FamilyTree(XMLSerializer serializer){
+		this.serializer = serializer;
+	}
+	
+	public FamilyTree(ArrayList<String[]> dataNodes, File file){
 		nodes = new HashMap<String, Node>();
 		trees = new ArrayList<Node>();
+		serializer = new XMLSerializer(file);
 		PriorityQueue<Node> pr = new PriorityQueue<Node>();
 		for(String[] memberData : dataNodes){
 			Node newNode = new Node(memberData[0],memberData[1].charAt(0),Integer.valueOf(memberData[2]),
@@ -65,11 +74,43 @@ public class FamilyTree {
 		return false;
 	}
 	
+	public void save() throws Exception{
+		serializer.push(nodes);
+		serializer.push(trees);
+		serializer.write();
+	}
+	
+	@SuppressWarnings("unchecked")
+	public void load() throws Exception{
+		serializer.read();
+		trees = (ArrayList<Node>) serializer.pop();
+		nodes = (Map<String, Node>) serializer.pop();
+	}
+	
 	
 	public void addFamilyMember(String name, char gender, int year, String parent1, String parent2){
 		Node newNode = new Node(name, gender, year, parent1, parent2);
 		nodes.put(name, newNode);
 		refactorConnections();
+		if(!checkTrees(newNode)) trees.add(newNode);
+	}
+	
+	public boolean removeFamilyMember(String name){
+		if(!familyMemberExist(name)) return false;
+		
+		Node member = nodes.get(name);
+		for(Node child : member.children){
+			if(child.father.equals(member))
+				child.father = null;
+			else if(child.mother.equals(member))
+				child.mother = null;
+		}
+		nodes.remove(name);
+		return true;
+	}
+	
+	public boolean familyMemberExist(String name){
+		return (nodes.get(name) == null)? false : true;
 	}
 	
 	private void refactorConnections(){
@@ -180,64 +221,52 @@ public class FamilyTree {
         int betweenSpaces = (int) Math.pow(2, (floor + 1)) - 1;
 
         tree+=printWhitespaces(firstSpaces);
-        System.out.print(printWhitespaces(firstSpaces));
 
         List<Node> newNodes = new ArrayList<Node>();
         for (Node node : nodes) {
             if (node != null) {
             	ArrayList<Node> siblings = getSiblings(node, new ArrayList<Node>());
                 tree+=node.name;
-                System.out.print(node.name);
                 tree+=" ( ";
-                System.out.print(" ( ");
                 for(int i=0; i<siblings.size(); i++){
                 	tree+=siblings.get(i).name+",";
-                	System.out.print(siblings.get(i).name+",");
                 }
                 tree = tree.substring(0, tree.length()-1);
                 tree+=" )";
-                System.out.print(" )");
                 newNodes.add(node.father);
                 newNodes.add(node.mother);
             } else {
                 newNodes.add(null);
                 newNodes.add(null);
                 tree+=" ";
-                System.out.print(" ");
             }
 
             tree+=printWhitespaces(betweenSpaces);
-            System.out.print(printWhitespaces(betweenSpaces));
         }
         tree+="\n";
-        System.out.print("\n");
 
         for (int i = 1; i <= endgeLines; i++) {
             for (int j = 0; j < nodes.size(); j++) {
                 tree+=printWhitespaces(firstSpaces - i);
-                System.out.print(printWhitespaces(firstSpaces - i));
                 if (nodes.get(j) == null) {
                     tree+=printWhitespaces(endgeLines + endgeLines + i + 1);
-                    System.out.print(printWhitespaces(endgeLines + endgeLines + i + 1));
                     continue;
                 }
 
                 if (nodes.get(j).father != null)
-                    System.out.print("/");//tree+="/";
+                    tree+="/";
                 else
-                	System.out.print(printWhitespaces(1));//tree+=printWhitespaces(1);
+                	tree+=printWhitespaces(1);
 
-                System.out.print(printWhitespaces(i + i - 1));//tree+= printWhitespaces(i + i - 1);
+                tree+= printWhitespaces(i + i - 1);
 
                 if (nodes.get(j).mother != null)
-                	System.out.print("\\");//tree+="\\";
+                	tree+="\\";
                 else
-                	System.out.print(printWhitespaces(1));//tree+=printWhitespaces(1);
+                	tree+=printWhitespaces(1);
 
                 tree+=printWhitespaces(endgeLines + endgeLines - i);
-                System.out.print(printWhitespaces(endgeLines + endgeLines - i));
             }
-            System.out.println();
             tree+="\n";
         }
 
