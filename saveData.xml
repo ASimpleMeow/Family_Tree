@@ -4697,7 +4697,17 @@
                                   </mother>
                                   <parent1Name>Sheila</parent1Name>
                                   <parent2Name>Jamison</parent2Name>
-                                  <children/>
+                                  <children>
+                                    <models.Node>
+                                      <name>AA</name>
+                                      <gender>F</gender>
+                                      <year>2017</year>
+                                      <father reference="../../.."/>
+                                      <parent1Name>Estevan</parent1Name>
+                                      <parent2Name>?</parent2Name>
+                                      <children/>
+                                    </models.Node>
+                                  </children>
                                 </models.Node>
                               </children>
                             </models.Node>
@@ -7890,26 +7900,7 @@
                 </mother>
                 <parent1Name>Candice</parent1Name>
                 <parent2Name>?</parent2Name>
-                <children>
-                  <models.Node>
-                    <name>AAAA</name>
-                    <gender>F</gender>
-                    <year>2017</year>
-                    <mother reference="../../.."/>
-                    <parent1Name>?</parent1Name>
-                    <parent2Name>Abagail</parent2Name>
-                    <children/>
-                  </models.Node>
-                  <models.Node>
-                    <name>AAA</name>
-                    <gender>M</gender>
-                    <year>2000</year>
-                    <mother reference="../../.."/>
-                    <parent1Name>Abagail</parent1Name>
-                    <parent2Name>?</parent2Name>
-                    <children/>
-                  </models.Node>
-                </children>
+                <children/>
               </models.Node>
             </entry>
             <entry>

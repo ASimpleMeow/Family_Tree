@@ -63,10 +63,12 @@ public class AddMemberController {
 		}
 		
 		if(parent1Field.getText().isEmpty()) parent1 = "?";
-		else parent1 = parent1Field.getText().trim();
+		else parent1 = (parent1Field.getText().substring(0, 1).toUpperCase() +
+				parent1Field.getText().substring(1)).trim();
 		
 		if(parent2Field.getText().isEmpty()) parent2 = "?";
-		else parent2 = parent2Field.getText().trim();
+		else parent2 = (parent2Field.getText().substring(0, 1).toUpperCase() +
+				parent2Field.getText().substring(1)).trim();
 		
 		Main.instance.familyTree.addFamilyMember(name, gender, year, parent1, parent2);
 		Main.instance.showSuccessMessage("SUCCESS", "Successfully added a new family member!", "");

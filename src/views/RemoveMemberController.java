@@ -41,8 +41,10 @@ public class RemoveMemberController {
 		boolean success = Main.instance.familyTree.removeFamilyMember(name);
 		if(success){
 			Main.instance.showSuccessMessage("SUCCESS", "Memeber "+name+" deleted successfully", "");
+			comboBox.getItems().clear();
+			comboBox.getItems().addAll(Main.instance.familyTree.getAllNodeNames());
 		}else{
-			Main.instance.showSuccessMessage("FAILURE", "Could not delete memeber "+name, "");
+			Main.instance.showErrorMessage("FAILURE", "Could not delete memeber "+name, "");
 		}
 	}
 	

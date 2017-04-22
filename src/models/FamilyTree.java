@@ -112,7 +112,7 @@ public class FamilyTree {
 	}
 	
 	public boolean familyMemberExist(String name){
-		return (nodes.get(name) == null)? false : true;
+		return (nodes.containsKey(name))? true : false;
 	}
 	
 	private void refactorConnections(){
@@ -208,6 +208,18 @@ public class FamilyTree {
 			members.add(node.name);
 		Collections.sort(members);
 		return members;
+	}
+	
+	public String[] getNode(String name){
+		if(!nodes.containsKey(name)) return null;
+		String[] node = new String[5];
+		Node returnNode = nodes.get(name);
+		node[0] = returnNode.name;
+		node[1] = String.valueOf(returnNode.gender);
+		node[2] = String.valueOf(returnNode.year);
+		node[3] = returnNode.father==null? null : returnNode.father.name;
+		node[4] = returnNode.mother==null? null : returnNode.mother.name;
+		return node;
 	}
 	
 	public String getFamilyTree(String node){
