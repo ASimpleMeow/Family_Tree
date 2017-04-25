@@ -1,28 +1,22 @@
-
 package utils;
 
-
-import java.io.BufferedInputStream;
-import java.io.BufferedOutputStream;
 import java.io.File;
-import java.io.FileInputStream;
-import java.io.FileOutputStream;
 import java.io.FileReader;
 import java.io.FileWriter;
 import java.io.ObjectInputStream;
 import java.io.ObjectOutputStream;
 import java.util.Stack;
-import java.util.zip.GZIPInputStream;
-import java.util.zip.GZIPOutputStream;
 
 import com.thoughtworks.xstream.XStream;
 import com.thoughtworks.xstream.io.xml.DomDriver;
 
 /**
- * Serailizes data to an XML file
- * 
- * @author Oleksandr Kononov
+ * @file        XMLSerializer
+ * @author      Oleksandr Kononov 20071032
+ * @assignment  FamilyTree
+ * @brief       Serialises data
  *
+ * @notes       
  */
 public class XMLSerializer
 {
@@ -41,7 +35,7 @@ private Stack stack = new Stack();
   }
 
   /**
-   * Pushs an object onto the stack
+   * Pushes an object onto the stack
    */
   @SuppressWarnings("unchecked")
   public void push(Object o)
@@ -58,10 +52,9 @@ private Stack stack = new Stack();
   }
 
   /**
-   * Reads in a stack from an XML file which is decompressed by GZIP stream
+   * Reads in a stack from an XML file
    */
-  @SuppressWarnings("unchecked")
-  public void read() throws Exception
+public void read() throws Exception
   {
     ObjectInputStream is = null;
 

@@ -15,10 +15,18 @@ import javafx.stage.WindowEvent;
 import models.FamilyTree;
 import views.MainViewController;
 
+/**
+ * @file        Main
+ * @author      Oleksandr Kononov 20071032
+ * @assignment  FamilyTree
+ * @brief       Main starting point of the program
+ *
+ * @notes       
+ */
 public class Main extends Application{
 	
 	private Stage primaryStage; //The main stage(window)
-	public final static Main instance = new Main();
+	public final static Main instance = new Main();	//One instance to access Main
 	public FamilyTree familyTree;
 	
 	public static void main(String[] args){
@@ -62,6 +70,18 @@ public class Main extends Application{
                 System.exit(0);
             }
         });
+	}
+	
+	/**
+	 * This method will display the MemberDetails window
+	 */
+	public Stage showDetails(){
+		try{
+			return stageSetUp("Member Details","/views/DetailsView.fxml");
+		}catch(IOException e){
+			e.printStackTrace();
+		}
+		return null;
 	}
 	
 	/**

@@ -34,6 +34,9 @@ public class RemoveMemberController {
 		comboBox.getItems().addAll(Main.instance.familyTree.getAllNodeNames());
 	}
 	
+	/**
+	 * Handle confirm button event
+	 */
 	@FXML
 	private void onConfirmButton(){
 		String name = comboBox.getValue();

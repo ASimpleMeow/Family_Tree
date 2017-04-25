@@ -9,6 +9,7 @@ import javafx.event.EventHandler;
 import javafx.fxml.FXML;
 import javafx.scene.control.Button;
 import javafx.scene.control.ComboBox;
+import javafx.scene.control.Label;
 import javafx.scene.control.TextArea;
 import javafx.stage.WindowEvent;
 import models.FamilyTree;
@@ -26,7 +27,11 @@ import utils.XMLSerializer;
 public class MainViewController {
 	
 	@FXML
+	private Label familyCountLabel; //Tells the number of familes
+	@FXML
 	private Button confirmButton;//Confirms users choice
+	@FXML
+	private Button detailsButton;	//Opens the details window
 	@FXML
 	private Button addMemberButton; //Opens the add member window
 	@FXML
@@ -55,7 +60,8 @@ public class MainViewController {
 			}
 		}
 		else Main.instance.familyTree = new FamilyTree(loadMemebers(), file);
-		comboBox.getItems().addAll(Main.instance.familyTree.getTreeRootNames());
+		update();
+		
 	}
 	
 	public static void saveFamilyTree(){
@@ -80,6 +86,14 @@ public class MainViewController {
 	}
 	
 	/**
+	 * On details button clicked event, open details window
+	 */
+	@FXML
+	private void onDetailsButton(){
+		Main.instance.showDetails();
+	}
+	
+	/**
 	 * On add member button clicked event, opens the window to add
 	 * new family members
 	 */
@@ -88,8 +102,7 @@ public class MainViewController {
 		try{
 			Main.instance.showAddMember().setOnCloseRequest(new EventHandler<WindowEvent>() {
 	            public void handle(WindowEvent we) {
-	            	comboBox.getItems().clear();
-	        		comboBox.getItems().addAll(Main.instance.familyTree.getAllNodeNames());
+	            	update();
 	            }
 	        });
 		}catch(NullPointerException e){
@@ -106,8 +119,7 @@ public class MainViewController {
 		try{
 			Main.instance.showRemoveMember().setOnCloseRequest(new EventHandler<WindowEvent>() {
 	            public void handle(WindowEvent we) {
-	            	comboBox.getItems().clear();
-	            	comboBox.getItems().addAll(Main.instance.familyTree.getAllNodeNames());
+	            	update();
 	            }
 	        });
 		}catch(NullPointerException e){
@@ -124,13 +136,19 @@ public class MainViewController {
 		try{
 			Main.instance.showModifyMember().setOnCloseRequest(new EventHandler<WindowEvent>() {
 	            public void handle(WindowEvent we) {
-	            	comboBox.getItems().clear();
-	            	comboBox.getItems().addAll(Main.instance.familyTree.getAllNodeNames());
+	            	update();
 	            }
 	        });
 		}catch(NullPointerException e){
 			Main.instance.showErrorMessage("ERROR", "Building Modify Member Stage could not be built", "");
 		}
+	}
+	
+	private void update(){
+		comboBox.getItems().clear();
+    	comboBox.getItems().addAll(Main.instance.familyTree.getAllNodeNames());
+    	int familyCount = Main.instance.familyTree.getFamilyCount();
+    	familyCountLabel.setText("(There are "+familyCount+" familes)");
 	}
 	
 	/**

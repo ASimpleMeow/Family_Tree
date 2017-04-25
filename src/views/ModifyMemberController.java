@@ -66,6 +66,9 @@ public class ModifyMemberController {
 		});
 	}
 	
+	/**
+	 * Perform various checks and modify the member when confirm is pressed
+	 */
 	@FXML
 	private void onConfirmButton(){
 		if(nameField.getText().isEmpty() || genderField.getText().isEmpty() || 
