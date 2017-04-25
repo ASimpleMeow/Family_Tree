@@ -65,6 +65,7 @@ public class FamilyTree {
 	 * and connections.
 	 */
 	private void refactorConnections(){
+		//Parents
 		for(Node node : nodes.values()){
 			if(nodes.get(node.parent1Name) != null){
 				if(nodes.get(node.parent1Name).gender == 'M')
@@ -78,12 +79,17 @@ public class FamilyTree {
 				else
 					node.mother = nodes.get(node.parent2Name);
 			}
-			for(Node child : nodes.values()){
-				if(child.equals(node)) continue;
-				if((child.father != null && child.father == node)||
-						(child.mother != null && child.mother == node)){
-					if(!node.children.contains(child)) node.children.add(child);
-				}
+		}
+		//Children
+		for(Node node : nodes.values()){
+			Node father = node.father;
+			Node mother = node.mother;
+			
+			if(father != null){
+				if(!father.children.contains(node)) father.children.add(node);
+			}
+			if(mother != null){
+				if(!mother.children.contains(node)) mother.children.add(node);
 			}
 		}
 	}
